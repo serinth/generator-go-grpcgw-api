@@ -4,35 +4,35 @@ package main
 import (
 	"flag"
 	"net/http"
-  "strings"
+	"strings"
 	"net"
-	"os"
-	
-  "github.com/serinth/test/proto"
-  "github.com/serinth/test/protoServices"
+
+	"<%=goAppPath%>/proto"
+	"<%=goAppPath%>/protoServices"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"golang.org/x/net/context"
+	"github.com/golang/glog"
 	"google.golang.org/grpc"
 )
 
 func newGRPCService() {
-  lis, err := net.Listen("tcp", ":10000")
-  if err != nil {
-    panic("Failed to start GRPC Services")
-  }
+	lis, err := net.Listen("tcp", ":10000")
+	if err != nil {
+		panic("Failed to start GRPC Services")
+	}
 
 	grpcServer := grpc.NewServer()
 	proto.RegisterHealthServer(grpcServer, protoServices.NewHealthService())
-	
-  grpcServer.Serve(lis)
+
+	grpcServer.Serve(lis)
 }
 
 // newGateway returns a new gateway server which translates HTTP into gRPC.
 func newGateway(ctx context.Context, opts ...runtime.ServeMuxOption) (http.Handler, error) {
 	mux := runtime.NewServeMux(opts...)
-  dialOpts := []grpc.DialOption{grpc.WithInsecure()}
-  
-  err := proto.RegisterHealthHandlerFromEndpoint(ctx, mux, "localhost:10000", dialOpts)
+	dialOpts := []grpc.DialOption{grpc.WithInsecure()}
+
+	err := proto.RegisterHealthHandlerFromEndpoint(ctx, mux, "localhost:10000", dialOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -70,8 +70,8 @@ func Run(address string, opts ...runtime.ServeMuxOption) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-  go newGRPCService()
-  
+	go newGRPCService()
+
 	mux := http.NewServeMux()
 	gw, err := newGateway(ctx, opts...)
 	if err != nil {

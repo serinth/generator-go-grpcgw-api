@@ -60,11 +60,6 @@ module.exports = class extends Generator {
     );
 
     this.fs.copy(
-      this.templatePath('protoServices/_health.go'),
-      path.join(protoServicesDir, 'health.go')
-    );
-
-    this.fs.copy(
       this.templatePath('proto/_healthService.proto'),
       path.join(protoDir, 'healthService.proto')
     );
@@ -77,6 +72,11 @@ module.exports = class extends Generator {
         this.templatePath('_main.go'),
         path.join(srcDir, 'main.go'),
         templateContext
+    );
+    this.fs.copyTpl(
+      this.templatePath('protoServices/_health.go'),
+      path.join(protoServicesDir, 'health.go'),
+      templateContext
     );
 
   }
