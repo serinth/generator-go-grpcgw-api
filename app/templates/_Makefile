@@ -1,0 +1,32 @@
+GRPC_GOOGLE_APIS:=$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis
+SRC:=$(GOPATH)/src
+PROTO_PATH:=./proto/*.proto
+
+tools:
+	go get -u github.com/grpc-ecosystem/grpc-gateway/...
+	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
+	go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+	go get -u github.com/golang/protobuf/protoc-gen-go
+	go get -u github.com/matryer/moq
+
+compile-protobuf:
+	protoc -I$GOPATH/src \
+	-I$(GRPC_GOOGLE_APIS) go_out=plugins=grpc:. \
+	$(PROTO_PATH)
+	protoc -I. \
+	-I$(SRC) \
+	-I$(GRPC_GOOGLE_APIS) \
+	--grpc-gateway_out=logtostderr=true:. \
+	$(PROTO_PATH)
+
+compile-binary:
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+
+generate-swagger:
+	protoc -I. \
+	-I$(GOPATH)/src \
+	-I$(GRPC_GOOGLE_APIS) \
+	--swagger_out=logtostderr=true:. \
+	$(PROTO_PATH)
+
+	
