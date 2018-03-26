@@ -15,7 +15,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func newGRPCService() {
+func newGRPCService() error {
 	lis, err := net.Listen("tcp", ":10000")
 	if err != nil {
 		panic("Failed to start GRPC Services")
@@ -24,7 +24,18 @@ func newGRPCService() {
 	grpcServer := grpc.NewServer()
 	proto.RegisterHealthServer(grpcServer, protoServices.NewHealthService())
 
-	grpcServer.Serve(lis)
+	return grpcServer.Serve(lis)	
+}
+
+func newRESTService(ctx context.Context, address string, opts ...runtime.ServeMuxOption) error {
+	mux := http.NewServeMux()
+	gw, err := newGateway(ctx, opts...)
+	if err != nil {
+		return err
+	}
+	mux.Handle("/", gw)
+
+	return http.ListenAndServe(address, allowCORS(mux))
 }
 
 // newGateway returns a new gateway server which translates HTTP into gRPC.
@@ -69,17 +80,16 @@ func Run(address string, opts ...runtime.ServeMuxOption) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
+	
+	errorChannel := make(chan error, 2)
 
-	go newGRPCService()
-
-	mux := http.NewServeMux()
-	gw, err := newGateway(ctx, opts...)
-	if err != nil {
+	go func() { errorChannel <- newGRPCService() }()
+	go func() { errorChannel <- newRESTService(ctx, address, opts...) }()
+	
+	if err := <-errorChannel; err != nil {
 		return err
-	}
-	mux.Handle("/", gw)
-
-	return http.ListenAndServe(address, allowCORS(mux))
+	}	
+	return nil
 }
 
 func main() {
