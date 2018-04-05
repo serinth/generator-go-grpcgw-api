@@ -2,21 +2,47 @@
 package main
 
 import (
-	"flag"
 	"net/http"
+	"os"
 	"strings"
 	"net"
 
+	"<%=goAppPath%>/app"
 	"<%=goAppPath%>/proto"
 	"<%=goAppPath%>/protoServices"
+
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	"github.com/golang/glog"
 	"google.golang.org/grpc"
 )
 
+func init() {
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetOutput(os.Stdout)
+	log.SetLevel(log.DebugLevel)
+}
+
+var cfg *app.Config
+
+func main() {
+	cfg = app.LoadConfig()
+
+	if cfg.IsDebuggingEnabled {
+		log.SetLevel(log.DebugLevel)
+		log.Info("Logging Level Debug set.")
+	} else {
+		log.SetLevel(log.InfoLevel)
+		log.Info("Logging Level Info set.")
+	}
+
+	if err := Run(cfg.ApiPort); err != nil {
+		log.Fatal(err)
+	}
+}
+
 func newGRPCService() error {
-	lis, err := net.Listen("tcp", ":10000")
+	lis, err := net.Listen("tcp", cfg.GrpcPort)
 	if err != nil {
 		panic("Failed to start GRPC Services")
 	}
@@ -43,7 +69,7 @@ func newGateway(ctx context.Context, opts ...runtime.ServeMuxOption) (http.Handl
 	mux := runtime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithInsecure()}
 
-	err := proto.RegisterHealthHandlerFromEndpoint(ctx, mux, "localhost:10000", dialOpts)
+	err := proto.RegisterHealthHandlerFromEndpoint(ctx, mux, cfg.GrpcHost + cfg.GrpcPort, dialOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +97,7 @@ func preflightHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", strings.Join(headers, ","))
 	methods := []string{"GET", "HEAD", "POST", "PUT", "DELETE"}
 	w.Header().Set("Access-Control-Allow-Methods", strings.Join(methods, ","))
-	glog.Infof("preflight request for %s", r.URL.Path)
+	log.Infof("preflight request for %s", r.URL.Path)
 	return
 }
 
@@ -90,13 +116,4 @@ func Run(address string, opts ...runtime.ServeMuxOption) error {
 		return err
 	}	
 	return nil
-}
-
-func main() {
-	flag.Parse()
-	defer glog.Flush()
-
-	if err := Run(":8080"); err != nil {
-		glog.Fatal(err)
-	}
 }

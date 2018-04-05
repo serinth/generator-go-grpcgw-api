@@ -17,5 +17,5 @@ curl localhost:8080/_ah/health
 
 The gateway / RESTful endpoint runs on port `8080`
 
-GRPC server runs on port `10000`
+GRPC server runs on port `8081`
 

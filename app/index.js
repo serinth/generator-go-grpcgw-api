@@ -37,18 +37,21 @@ module.exports = class extends Generator {
     let srcDir = this.destinationPath(path.join('src/', this.goAppPath));
     let protoDir = this.destinationPath(path.join('src/', this.goAppPath, "/proto"));
     let protoServicesDir = this.destinationPath(path.join('src/', this.goAppPath, "/protoServices"));
-    
+    let appDir = this.destinationPath(path.join('src/', this.goAppPath, "/app"));
+    let configsDir = this.destinationPath(path.join('src/', this.goAppPath, "/configs"));
+
     mkdir.sync(srcDir);
     mkdir.sync(protoDir);
     mkdir.sync(protoServicesDir);
+    mkdir.sync(appDir);
 
     this.fs.copy(
-        this.templatePath('_.gitignore'),
-        path.join(srcDir, '.gitignore')
+      this.templatePath('_.gitignore'),
+      path.join(srcDir, '.gitignore')
     );
     this.fs.copy(
-        this.templatePath('_README.md'),
-        path.join(srcDir, 'README.md')
+      this.templatePath('_README.md'),
+      path.join(srcDir, 'README.md')
     );
     this.fs.copy(
       this.templatePath('_Dockerfile'),
@@ -64,14 +67,24 @@ module.exports = class extends Generator {
       path.join(protoDir, 'healthService.proto')
     );
 
+    this.fs.copy(
+      this.templatePath('app/_app.go'),
+      path.join(appDir, 'app.go')
+    );
+
+    this.fs.copy(
+      this.templatePath('configs/_local.toml'),
+      path.join(configsDir, 'local.toml')
+    );
+
     let templateContext = {
         goAppPath: this.goAppPath
     };
 
     this.fs.copyTpl(
-        this.templatePath('_main.go'),
-        path.join(srcDir, 'main.go'),
-        templateContext
+      this.templatePath('_main.go'),
+      path.join(srcDir, 'main.go'),
+      templateContext
     );
     this.fs.copyTpl(
       this.templatePath('protoServices/_health.go'),
