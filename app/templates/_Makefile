@@ -24,7 +24,7 @@ tools: ## Fetch and install required tools
 	go get -u github.com/matryer/moq
 
 compile-protobuf: ## Compile protocol buffer files
-	protoc -I. -I$GOPATH/src \
+	protoc -I. -I$(GOPATH)/src \
 	-I$(GRPC_GOOGLE_APIS) --go_out=plugins=grpc:. \
 	$(PROTO_PATH)
 	protoc -I. \
