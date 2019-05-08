@@ -25,11 +25,11 @@ func LoadConfig() *Config {
 	}
 	cfg := Config{}
 
+	err := env.Parse(&cfg)
+	
 	if _, err := toml.DecodeFile("configs/"+initialEnv+".toml", &cfg); err != nil {
 		log.Fatalf("Could not load %s config with error: %s", err.Error())
 	}
-
-	err := env.Parse(&cfg)
 
 	if err != nil {
 		log.Fatalf("Failed to load env variables. %+v\n", err)
