@@ -8,7 +8,7 @@ An Example with TLS: https://github.com/philips/grpc-gateway-example
 make tools
 make compile-protobuf
 go get ./... # Omit this line if using Go modules
-go run main.go
+ENVIRONMENT=local go run main.go
 
 curl localhost:8080/_ah/health
 ```
