@@ -3,9 +3,14 @@
 GRPC Gateway: https://github.com/grpc-ecosystem/grpc-gateway
 An Example with TLS: https://github.com/philips/grpc-gateway-example
 
+# Requirements
+- protoc v3.0.0 or above, can be installed with apt
+- libprotobuf-dev (e.g. `sudo apt-get install libprotobuf-dev`)
+- you will need the grpc-ecosystem sources
+
 # Quick Start - Go Application
 ```bash
-make tools
+make tools # GO111MODULE=off make tools if using go mod to get grpc-ecosystem sources referenced in the Makefile
 make compile-protobuf
 go get ./... # Omit this line if using Go modules
 ENVIRONMENT=local go run main.go
