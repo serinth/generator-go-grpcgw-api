@@ -49,14 +49,12 @@ module.exports = class extends Generator {
       this.templatePath('_.gitignore'),
       path.join(srcDir, '.gitignore')
     );
+
     this.fs.copy(
       this.templatePath('_README.md'),
       path.join(srcDir, 'README.md')
     );
-    this.fs.copy(
-      this.templatePath('_Dockerfile'),
-      path.join(srcDir, 'Dockerfile')
-    );
+
     this.fs.copy(
       this.templatePath('_Makefile'),
       path.join(srcDir, 'Makefile')
@@ -86,9 +84,16 @@ module.exports = class extends Generator {
       path.join(srcDir, 'main.go'),
       templateContext
     );
+    
     this.fs.copyTpl(
       this.templatePath('protoServices/_health.go'),
       path.join(protoServicesDir, 'health.go'),
+      templateContext
+    );
+    
+    this.fs.copyTpl(
+      this.templatePath('_Dockerfile'),
+      path.join(srcDir, 'Dockerfile'),
       templateContext
     );
 
