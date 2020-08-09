@@ -7,38 +7,31 @@ const mkdir = require('mkdirp');
 module.exports = class extends Generator {
 
   paths() {
-      this.destinationRoot(process.env.GOPATH);
+      this.destinationRoot();
   }
 
   prompting() {
     let done = this.async();
     let prompts = [{
         type: 'input',
-        name: 'applicationName',
-        message: 'What is the name of your application? (e.g. myApp):',
+        name: 'packageName',
+        message: 'What is your package name? (e.g. github.com/serinth/myApp):',
         default: 'grpcgw-app'
-    }, {
-        type: 'input',
-        name: 'repo',
-        message: 'What is your URL repository? (e.g. github.com/me):'
     }];
 
     return this.prompt(prompts).then(props => {
-        if (props.repo.substr(-1) != '/') {
-          props.repo += '/';
-        }
-        this.goAppPath = props.repo + props.applicationName;
+        this.goAppPath = props.packageName;
         done();
     });
 
   }
 
   writing() {
-    let srcDir = this.destinationPath(path.join('src/', this.goAppPath));
-    let protoDir = this.destinationPath(path.join('src/', this.goAppPath, "/proto"));
-    let protoServicesDir = this.destinationPath(path.join('src/', this.goAppPath, "/protoServices"));
-    let appDir = this.destinationPath(path.join('src/', this.goAppPath, "/app"));
-    let configsDir = this.destinationPath(path.join('src/', this.goAppPath, "/configs"));
+    let srcDir = this.destinationPath(path.join('src/'));
+    let protoDir = this.destinationPath(path.join('src/', "/proto"));
+    let protoServicesDir = this.destinationPath(path.join('src/', "/protoServices"));
+    let appDir = this.destinationPath(path.join('src/', "/app"));
+    let configsDir = this.destinationPath(path.join('src/', "/configs"));
 
     mkdir.sync(srcDir);
     mkdir.sync(protoDir);

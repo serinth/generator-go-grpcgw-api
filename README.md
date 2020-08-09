@@ -3,16 +3,36 @@
 npm install -g yo
 cd generator-go-grpcgw-api
 npm link
+cd [YOUR NEW CODE REPO DIR]
 yo go-grpcgw-api
 ```
 
-Creates a GRPC Gateway project with one health endpoint and CORS enabled.
+# Features
+- Go Mod ready, deprecated GOPATH requirement
+- GRPCGW ready
+- Protocol Buffers
+- CORS enabled with Health Endpoint
+- Configuration values setup with toml files
 
-It will prompt for 2 things:
+A README on how to use the new microservice is inside the generated code.
 
-1. Application name e.g. (myApp)
-2. URL Repository e.g. (github.com/serinth)
+This generator will prompt for the package name:
+```
+What is your package name? (e.g. github.com/serinth/myApp):
+```
 
-The resulting repo that gets generated will be under `$GOPATH/github.com/serinth/myApp`
+Based on these value, the code generated will have the following replacements:
 
-A README on how to use the new microservice is inside myApp.
+```go
+import (
+	"net/http"
+
+	"<%=goAppPath%>/app"
+	"<%=goAppPath%>/proto"
+	"<%=goAppPath%>/protoServices"
+)
+```
+
+where `<%=goAppPath%>` will be `github.com/serinth/myApp`.
+
+The code generated will be in **[current directory]/src** so make sure you change directories first before running `yo go-grpcgw-api`.
