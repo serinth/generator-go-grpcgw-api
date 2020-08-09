@@ -9,6 +9,7 @@ An Example with TLS: https://github.com/philips/grpc-gateway-example
 - you will need the grpc-ecosystem sources
 
 # Quick Start - Go Application
+Modify `Makefile`'s top 3 variables to reference the appropriate source directories for [googleapi's depedency](https://github.com/grpc-ecosystem/grpc-gateway/tree/master/third_party/googleapis) -- ensure that you have it cloned.:
 ```bash
 make tools # GO111MODULE=off make tools if using go mod to get grpc-ecosystem sources referenced in the Makefile
 make compile-protobuf

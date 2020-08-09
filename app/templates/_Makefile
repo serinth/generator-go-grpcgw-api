@@ -1,5 +1,5 @@
 GRPC_GOOGLE_APIS:=$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis
-SRC:=$(GOPATH)/src
+SRC:=./src
 PROTO_PATH:=./proto/*.proto
 
 default: help
@@ -25,7 +25,7 @@ tools: ## Fetch and install required tools
 	go install github.com/golang/mock/mockgen
 	
 compile-protobuf: ## Compile protocol buffer files
-	protoc -I. -I$(GOPATH)/src \
+	protoc -I. -I$(SRC) \
 	-I$(GRPC_GOOGLE_APIS) --go_out=plugins=grpc:. \
 	$(PROTO_PATH)
 	protoc -I. \
@@ -39,7 +39,7 @@ compile-binary: ## Create Linux ELF binary
 
 generate-swagger: ## Generate swagger docs from protobuf files
 	protoc -I. \
-	-I$(GOPATH)/src \
+	-I$(SRC) \
 	-I$(GRPC_GOOGLE_APIS) \
 	--swagger_out=logtostderr=true:. \
 	$(PROTO_PATH)
