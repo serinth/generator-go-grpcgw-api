@@ -13,6 +13,7 @@ yo go-grpcgw-api
 - Protocol Buffers
 - CORS enabled with Health Endpoint
 - Configuration values setup with toml files
+- A Helm chart for the Golang service with a sample DB connection secret
 
 A README on how to use the new microservice is inside the generated code.
 
@@ -36,3 +37,4 @@ import (
 where `<%=goAppPath%>` will be `github.com/serinth/myApp`.
 
 The code generated will be in **[current directory]/src** so make sure you change directories first before running `yo go-grpcgw-api`.
+

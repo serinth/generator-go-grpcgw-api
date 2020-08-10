@@ -27,68 +27,98 @@ module.exports = class extends Generator {
   }
 
   writing() {
+    
+    let templateContext = {
+      goAppPath: this.goAppPath
+    };
+    let _this = this;
+
+    
+    // Top Level source files
     let srcDir = this.destinationPath(path.join('src/'));
-    let protoDir = this.destinationPath(path.join('src/', "/proto"));
-    let protoServicesDir = this.destinationPath(path.join('src/', "/protoServices"));
-    let appDir = this.destinationPath(path.join('src/', "/app"));
-    let configsDir = this.destinationPath(path.join('src/', "/configs"));
-
     mkdir.sync(srcDir);
+    const srcFiles = ['_.gitignore', '_README.md', '_Makefile'];
+    
+    srcFiles.forEach(f => {
+      _this.fs.copy(
+        _this.templatePath(f),
+        path.join(srcDir,f.replace(/^_/g, ''))
+      );
+    });
+
+    // Template files requiring package context in Top level source
+    const srcTemplateFiles = ['_main.go', '_Dockerfile'];
+
+    srcTemplateFiles.forEach(f => {
+      _this.fs.copyTpl(
+        _this.templatePath(f),
+        path.join(srcDir,f.replace(/^_/g, '')),
+        templateContext
+      );
+    });
+  
+    // Proto files
+    let protoDir = this.destinationPath(path.join('src/', '/proto'));
     mkdir.sync(protoDir);
-    mkdir.sync(protoServicesDir);
-    mkdir.sync(appDir);
 
-    this.fs.copy(
-      this.templatePath('_.gitignore'),
-      path.join(srcDir, '.gitignore')
-    );
-
-    this.fs.copy(
-      this.templatePath('_README.md'),
-      path.join(srcDir, 'README.md')
-    );
-
-    this.fs.copy(
-      this.templatePath('_Makefile'),
-      path.join(srcDir, 'Makefile')
-    );
-
-    this.fs.copy(
-      this.templatePath('proto/_healthService.proto'),
+    _this.fs.copy(
+      _this.templatePath('proto/_healthService.proto'),
       path.join(protoDir, 'healthService.proto')
     );
 
-    this.fs.copy(
-      this.templatePath('app/_app.go'),
+    // Application Bootstrap
+    let appDir = this.destinationPath(path.join('src/', '/app'));
+    mkdir.sync(appDir);
+
+    _this.fs.copy(
+      _this.templatePath('app/_app.go'),
       path.join(appDir, 'app.go')
     );
 
-    this.fs.copy(
-      this.templatePath('configs/_local.toml'),
+
+    // Configurations which bootstrap loads
+    let configsDir = this.destinationPath(path.join('src/', '/configs'));
+    mkdir.sync(configsDir);
+
+    _this.fs.copy(
+      _this.templatePath('configs/_local.toml'),
       path.join(configsDir, 'local.toml')
     );
-
-    let templateContext = {
-        goAppPath: this.goAppPath
-    };
-
-    this.fs.copyTpl(
-      this.templatePath('_main.go'),
-      path.join(srcDir, 'main.go'),
-      templateContext
-    );
     
+    // Proto services
+    let protoServicesDir = this.destinationPath(path.join('src/', '/protoServices'));
+    mkdir.sync(protoServicesDir);
+
     this.fs.copyTpl(
       this.templatePath('protoServices/_health.go'),
       path.join(protoServicesDir, 'health.go'),
       templateContext
     );
     
-    this.fs.copyTpl(
-      this.templatePath('_Dockerfile'),
-      path.join(srcDir, 'Dockerfile'),
-      templateContext
-    );
+    // Helm Chart
+   
+    let helmDir = this.destinationPath(path.join('src/', 'helmChart'));
+    let helmTemplateDir = this.destinationPath(path.join('src/', '/helmChart', '/templates'));
+    mkdir.sync(helmDir);
+    mkdir.sync(helmTemplateDir);
+
+    const helmFiles = ['_values.yaml', '_Chart.yaml'];
+    const helmTemplateFiles = ['__helpers.tpl', '_dbConnectionStringSecret.yaml', '_deployment.yaml', '_NOTES.txt', '_service.yaml'];
+
+    helmFiles.forEach(f => {
+      _this.fs.copy(
+        _this.templatePath('helmChart/', f),
+        path.join(helmDir,f.replace(/^_/g, ''))
+      );
+    });
+
+    helmTemplateFiles.forEach(f => {
+      _this.fs.copy(
+        _this.templatePath('helmChart/templates/', f),
+        path.join(helmTemplateDir,f.replace(/^_/g, ''))
+      );
+    });
+
 
   }
 };
