@@ -7,6 +7,7 @@ An Example with TLS: https://github.com/philips/grpc-gateway-example
 - protoc v3.0.0 or above, can be installed with apt
 - libprotobuf-dev (e.g. `sudo apt-get install libprotobuf-dev`)
 - you will need the grpc-ecosystem sources
+- Ensure that you have the `bin` directory of your GOPATH (`go env GOPATH`) in your PATH
 
 # Quick Start - Go Application
 Modify `Makefile`'s top 3 variables to reference the appropriate source directories for [googleapi's depedency](https://github.com/grpc-ecosystem/grpc-gateway/tree/master/third_party/googleapis) -- ensure that you have it cloned.:
