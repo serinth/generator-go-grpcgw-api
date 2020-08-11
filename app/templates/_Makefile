@@ -24,9 +24,6 @@ tools: ## Fetch and install required tools
 	go get -u github.com/golang/mock/gomock
 	go install github.com/golang/mock/mockgen
 
-test1:
-	ls ${GRPC_GOOGLE_APIS}
-
 compile-protobuf: ## Compile protocol buffer files
 	protoc -I. \
 	-I$(GRPC_GOOGLE_APIS) --go_out=plugins=grpc:. \
