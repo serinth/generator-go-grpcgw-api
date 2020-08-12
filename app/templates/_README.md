@@ -11,9 +11,10 @@ An Example with TLS: https://github.com/philips/grpc-gateway-example
 
 # Quick Start - Go Application
 This generator is made to be backward compatible if you used a dependency manager like Glide, or Dep. With the newer versions of Go, the recommended way is to use go modules. When using go modules, you still need to do a
-`go mod init <package name>` in the `src` folder where package is the same as what you entered when using the generator e.g. `github.com/serinth/myApp`
+`go mod init <package name>` in the `src` folder where package is the same as what you entered when using the generator e.g. `github.com/serinth/myApp`. However, do this **after** `make tools`
 
 ```bash
+cd src
 make tools
 make compile-protobuf
 ENVIRONMENT=local go run main.go
