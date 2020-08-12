@@ -10,11 +10,12 @@ An Example with TLS: https://github.com/philips/grpc-gateway-example
 - Ensure that you have the `bin` directory of your GOPATH (`go env GOPATH`) in your PATH
 
 # Quick Start - Go Application
-Modify `Makefile`'s top 3 variables to reference the appropriate source directories for [googleapi's depedency](https://github.com/grpc-ecosystem/grpc-gateway/tree/master/third_party/googleapis) -- ensure that you have it cloned.:
+This generator is made to be backward compatible if you used a dependency manager like Glide, or Dep. With the newer versions of Go, the recommended way is to use go modules. When using go modules, you still need to do a
+`go mod init <package name>` in the `src` folder where package is the same as what you entered when using the generator e.g. `github.com/serinth/myApp`
+
 ```bash
-make tools # GO111MODULE=off make tools if using go mod to get grpc-ecosystem sources referenced in the Makefile
+make tools
 make compile-protobuf
-go get ./... # Omit this line if using Go modules
 ENVIRONMENT=local go run main.go
 
 curl localhost:8080/_ah/health
